@@ -1,14 +1,17 @@
 package main
 
 import (
-	"database/sql"
-	"log"
+	"context"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	_ "github.com/lib/pq"
+
+	"github.com/hgcassiopeia/assessment/expenses"
 )
 
 func hello(c echo.Context) error {
@@ -16,26 +19,7 @@ func hello(c echo.Context) error {
 }
 
 func main() {
-	dbconnection := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", dbconnection)
-	if err != nil {
-		log.Fatal("Connect to database error", err)
-	}
-	defer db.Close()
-
-	createTb := `
-	CREATE TABLE IF NOT EXISTS expenses (
-		id SERIAL PRIMARY KEY,
-		title TEXT,
-		amount FLOAT,
-		note TEXT,
-		tags TEXT[]
-	);`
-
-	_, err = db.Exec(createTb)
-	if err != nil {
-		log.Fatal("can't create table", err)
-	}
+	expenses.InitDB()
 
 	e := echo.New()
 
@@ -44,6 +28,19 @@ func main() {
 
 	e.GET("/", hello)
 
-	serverPort := ":" + os.Getenv("PORT")
-	e.Logger.Fatal(e.Start(serverPort))
+	go func() {
+		serverPort := ":" + os.Getenv("PORT")
+		if err := e.Start(serverPort); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server...")
+		}
+	}()
+
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+	<-shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
