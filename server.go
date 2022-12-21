@@ -24,5 +24,5 @@ func main() {
 
 	e.GET("/", hello)
 
-	e.Logger.Fatal(e.Start(":2565"))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
