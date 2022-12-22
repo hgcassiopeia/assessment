@@ -14,10 +14,6 @@ import (
 	"github.com/hgcassiopeia/assessment/expenses"
 )
 
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
-}
-
 func main() {
 	expenses.InitDB()
 
@@ -26,7 +22,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", hello)
+	e.POST("/expenses", expenses.AddNewExpenseHandler)
 
 	go func() {
 		serverPort := ":" + os.Getenv("PORT")
