@@ -9,5 +9,5 @@ type Expenses struct {
 }
 
 type Error struct {
-	Message string `json:message`
+	Message string `json:"message"`
 }
