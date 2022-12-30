@@ -1,4 +1,6 @@
-package expenses
+//go:build integration
+
+package expenseso
 
 import (
 	"bytes"

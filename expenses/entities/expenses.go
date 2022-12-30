@@ -1,4 +1,4 @@
-package expenses
+package entities
 
 type Expenses struct {
 	Id     int      `json:"id"`
@@ -6,8 +6,4 @@ type Expenses struct {
 	Amount float32  `json:"amount"`
 	Note   string   `json:"note"`
 	Tags   []string `json:"tags"`
-}
-
-type Error struct {
-	Message string `json:"message"`
 }

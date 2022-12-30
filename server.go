@@ -11,18 +11,24 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/hgcassiopeia/assessment/expenses"
+	"github.com/hgcassiopeia/assessment/expenses/drivers"
 )
 
 func main() {
-	expenses.InitDB()
+	dbConn := drivers.ConnectDB()
+	defer dbConn.Close()
 
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.POST("/expenses", expenses.AddNewExpenseHandler)
+	err := drivers.InitTable(dbConn)
+	if err != nil {
+		e.Logger.Fatal(err.Error())
+	}
+
+	// expensesRepository := repo.InitRepository(dbConn)
 
 	go func() {
 		serverPort := ":" + os.Getenv("PORT")

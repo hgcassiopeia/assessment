@@ -1,4 +1,4 @@
-package expenses
+package expenseso
 
 import (
 	"database/sql"
