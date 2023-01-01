@@ -12,6 +12,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/hgcassiopeia/assessment/expenses/drivers"
+	"github.com/hgcassiopeia/assessment/expenses/handler"
+	"github.com/hgcassiopeia/assessment/expenses/repo"
+	"github.com/hgcassiopeia/assessment/expenses/service"
 )
 
 func main() {
@@ -28,7 +31,11 @@ func main() {
 		e.Logger.Fatal(err.Error())
 	}
 
-	// expensesRepository := repo.InitRepository(dbConn)
+	expensesRepository := repo.InitRepository(dbConn)
+	expenseUseCase := service.Init(expensesRepository)
+	httpHandler := handler.HttpHandler{UseCase: expenseUseCase}
+
+	e.POST("/expenses", httpHandler.AddNewExpense)
 
 	go func() {
 		serverPort := ":" + os.Getenv("PORT")

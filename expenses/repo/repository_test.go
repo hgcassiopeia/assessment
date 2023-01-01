@@ -18,23 +18,34 @@ func TestCreateExpense(t *testing.T) {
 	defer db.Close()
 	repo := InitRepository(db)
 
-	expense := &entities.Expenses{
+	given := &entities.Expenses{
 		Title:  "strawberry smoothie",
 		Amount: 79,
 		Note:   "night market promotion discount 10 bath",
 		Tags:   []string{"food", "beverage"},
 	}
-	expectedId := 1
+
+	expected := entities.Expenses{
+		Id:     1,
+		Title:  "strawberry smoothie",
+		Amount: 79,
+		Note:   "night market promotion discount 10 bath",
+		Tags:   []string{"food", "beverage"},
+	}
 
 	mock.ExpectQuery("INSERT INTO expenses").
-		WithArgs(expense.Title, expense.Amount, expense.Note, pq.Array(expense.Tags)).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
+		WithArgs(given.Title, given.Amount, given.Note, pq.Array(given.Tags)).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expected.Id))
 
 	// Act
-	err = repo.CreateExpense(expense)
+	result, err := repo.CreateExpense(given)
 
 	// Assert
 	if assert.NoError(t, err) {
-		assert.Equal(t, expectedId, expense.Id)
+		assert.Equal(t, expected.Id, result.Id)
+		assert.Equal(t, expected.Title, result.Title)
+		assert.Equal(t, expected.Amount, result.Amount)
+		assert.Equal(t, expected.Note, result.Note)
+		assert.Equal(t, expected.Tags, result.Tags)
 	}
 }

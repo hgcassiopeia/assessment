@@ -1,6 +1,6 @@
 //go:build integration
 
-package expenseso
+package handler
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hgcassiopeia/assessment/expenses/entities"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,17 +21,19 @@ func TestAddNewExpenses(t *testing.T) {
 		"note": "central bangna", 
 		"tags": ["food", "beverage"]
 	}`)
-	var exp Expenses
-	res := request(http.MethodPost, uri("expenses"), body)
-	err := res.Decode(&exp)
 
-	assert.Nil(t, err)
-	assert.Equal(t, http.StatusCreated, res.StatusCode)
-	assert.NotEqual(t, 0, exp.Id)
-	assert.Equal(t, "Isakaya Bangna", exp.Title)
-	assert.Equal(t, float32(899), exp.Amount)
-	assert.Equal(t, "central bangna", exp.Note)
-	assert.ElementsMatch(t, []string{"food", "beverage"}, exp.Tags)
+	var expense entities.Expenses
+	res := request(http.MethodPost, uri("expenses"), body)
+	err := res.Decode(&expense)
+
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusCreated, res.StatusCode)
+		assert.NotEqual(t, 0, expense.Id)
+		assert.Equal(t, "Isakaya Bangna", expense.Title)
+		assert.Equal(t, float32(899), expense.Amount)
+		assert.Equal(t, "central bangna", expense.Note)
+		assert.ElementsMatch(t, []string{"food", "beverage"}, expense.Tags)
+	}
 }
 
 func uri(paths ...string) string {
