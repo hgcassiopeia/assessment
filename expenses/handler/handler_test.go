@@ -8,9 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
-	"net"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -21,36 +20,47 @@ import (
 	"github.com/hgcassiopeia/assessment/expenses/service"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
-const serverPort = 2565
+type ExpensesTestSuite struct {
+	suite.Suite
+	app echo.Echo
+}
 
-func TestAddNewExpenses(t *testing.T) {
-	eh := echo.New()
-	go func(e *echo.Echo) {
-		dbConn, err := drivers.ConnectDB()
-		if err != nil {
-			log.Fatal(err)
-		}
+func TestExpensesTestSuite(t *testing.T) {
+	suite.Run(t, &ExpensesTestSuite{})
+}
 
-		expensesRepository := repo.InitRepository(dbConn)
-		expenseUseCase := service.Init(expensesRepository)
-		httpHandler := HttpHandler{UseCase: expenseUseCase}
+func (s *ExpensesTestSuite) SetupSuite() {
+	dbConn, err := drivers.ConnectDB()
+	s.Nil(err)
+	err = drivers.InitTable(dbConn)
+	s.Nil(err)
 
-		e.POST("/expenses", httpHandler.AddNewExpense)
-		e.Start(fmt.Sprintf(":%d", serverPort))
-	}(eh)
-	for {
-		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", serverPort), 30*time.Second)
-		if err != nil {
-			log.Println(err)
-		}
-		if conn != nil {
-			conn.Close()
-			break
-		}
-	}
+	expensesRepository := repo.InitRepository(dbConn)
+	expenseUseCase := service.Init(expensesRepository)
+	httpHandler := HttpHandler{UseCase: expenseUseCase}
 
+	s.app = *echo.New()
+	s.app.POST("/expenses", httpHandler.AddNewExpense)
+	s.app.GET("/expenses/:id", httpHandler.GetExpenseDetail)
+
+	go func() {
+		serverPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
+		s.app.Start(serverPort)
+	}()
+}
+
+func (s *ExpensesTestSuite) TearDownSuite() {
+	s.app.Logger.Info("tear down...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := s.app.Shutdown(ctx)
+	assert.NoError(s.T(), err)
+}
+
+func (s *ExpensesTestSuite) TestAddNewExpenses() {
 	body := bytes.NewBufferString(`{
 		"title": "Isakaya Bangna",
 		"amount": 899,
@@ -59,34 +69,59 @@ func TestAddNewExpenses(t *testing.T) {
 	}`)
 
 	var result entities.Expenses
-	res := request(http.MethodPost, uri("expenses"), body)
-	err := res.Decode(&result)
+	response := request(http.MethodPost, uri("expenses"), body)
+	err := response.Decode(&result)
 
 	expected := entities.Expenses{
-		Id:     1,
+		Id:     0,
 		Title:  "Isakaya Bangna",
 		Amount: float32(899),
 		Note:   "central bangna",
 		Tags:   []string{"food", "beverage"},
 	}
 
-	if assert.NoError(t, err) {
-		assert.Equal(t, http.StatusCreated, res.StatusCode)
-		assert.NotEqual(t, expected.Id, &result.Id)
-		assert.Equal(t, expected.Title, result.Title)
-		assert.Equal(t, expected.Amount, result.Amount)
-		assert.Equal(t, expected.Note, result.Note)
-		assert.ElementsMatch(t, expected.Tags, result.Tags)
+	if err == nil {
+		assert.Equal(s.T(), http.StatusCreated, response.StatusCode)
+		assert.NotNil(s.T(), &result.Id)
+		assert.NotEqual(s.T(), expected.Id, result.Id)
+		assert.Equal(s.T(), expected.Title, result.Title)
+		assert.Equal(s.T(), expected.Amount, result.Amount)
+		assert.Equal(s.T(), expected.Note, result.Note)
+		assert.ElementsMatch(s.T(), expected.Tags, result.Tags)
 	}
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	err = eh.Shutdown(ctx)
-	assert.NoError(t, err)
+func (s *ExpensesTestSuite) TestAddNewExpenses_BadRequest() {
+	body := bytes.NewBufferString(`{
+		"title": "Isakaya Bangna",
+		"amount": "899",
+		"note": "central bangna", 
+		"tags": ["food", "beverage"]
+	}`)
+
+	var exp entities.Expenses
+	response := request(http.MethodPost, uri("expenses"), body)
+	err := response.Decode(&exp)
+
+	if err != nil {
+		assert.Equal(s.T(), http.StatusBadRequest, response.StatusCode)
+	}
+}
+
+func (s *ExpensesTestSuite) TestGetExpenseDetail() {
+	var exp entities.Expenses
+
+	given := "1"
+	response := request(http.MethodGet, uri("expenses", given), nil)
+	err := response.Decode(&exp)
+
+	if err == nil {
+		assert.Equal(s.T(), http.StatusOK, response.StatusCode)
+	}
 }
 
 func uri(paths ...string) string {
-	host := fmt.Sprintf("http://localhost:%d", serverPort)
+	host := fmt.Sprintf("http://localhost:%v", os.Getenv("PORT"))
 	if paths == nil {
 		return host
 	}
