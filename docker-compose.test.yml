@@ -1,7 +1,7 @@
 version: "3.2"
 
 networks:
-  assessment-network:
+  assessment-test-network:
 
 services:
   test_app:
@@ -13,7 +13,7 @@ services:
     depends_on:
       - test_db
     networks:
-      - assessment-network
+      - assessment-test-network
 
   test_db:
     image: postgres:12.12
@@ -25,4 +25,4 @@ services:
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     networks:
-      - assessment-network
+      - assessment-test-network
