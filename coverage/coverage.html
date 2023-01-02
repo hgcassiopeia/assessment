@@ -55,9 +55,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/hgcassiopeia/assessment/expenses/repo/repository.go (83.3%)</option>
+				<option value="file0">github.com/hgcassiopeia/assessment/expenses/repo/repository.go (100.0%)</option>
 				
-				<option value="file1">github.com/hgcassiopeia/assessment/expenses/service/service.go (80.0%)</option>
+				<option value="file1">github.com/hgcassiopeia/assessment/expenses/service/service.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -92,7 +92,7 @@ func InitRepository(Conn *sql.DB) expenses.Repository <span class="cov8" title="
 func (r *RepoImpl) CreateExpense(expense *entities.Expenses) (*entities.Expenses, error) <span class="cov8" title="1">{
         row := r.DB.QueryRow("INSERT INTO expenses (title, amount, note, tags) VALUES ($1, $2, $3, $4) RETURNING id", expense.Title, expense.Amount, expense.Note, pq.Array(&amp;expense.Tags))
         err := row.Scan(&amp;expense.Id)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
 
@@ -118,7 +118,7 @@ func Init(databaseRepo expenses.Repository) expenses.UseCase <span class="cov8" 
 func (u *UseCaseImpl) CreateExpense(expense *entities.Expenses) (*entities.Expenses, error) <span class="cov8" title="1">{
         result, err := u.Repository.CreateExpense(expense)
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
 

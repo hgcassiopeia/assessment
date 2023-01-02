@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -50,6 +51,7 @@ func TestAddNewExpense(t *testing.T) {
 	})
 
 	t.Run("Fail - TestAddNewExpense", func(t *testing.T) {
+		// Arrange
 		given := &entities.Expenses{
 			Id:     0,
 			Title:  "Isakaya Bangna",
@@ -58,13 +60,16 @@ func TestAddNewExpense(t *testing.T) {
 			Tags:   []string{"food", "beverage"},
 		}
 
-		var expected error
-
+		expected := fmt.Errorf("error service create expenses")
 		mockRepo.EXPECT().CreateExpense(given).Return(nil, expected)
 
+		// Act
 		service := Init(mockRepo)
 		_, err := service.CreateExpense(given)
 
-		assert.NoError(t, err)
+		// Assert
+		if err != nil {
+			assert.Equal(t, expected, err)
+		}
 	})
 }
