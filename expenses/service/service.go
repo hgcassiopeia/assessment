@@ -24,5 +24,11 @@ func (u *UseCaseImpl) CreateExpense(expense *entities.Expenses) (*entities.Expen
 }
 
 func (u *UseCaseImpl) GetExpense(id string) (*entities.Expenses, error) {
-	return &entities.Expenses{}, nil
+	result, err := u.Repository.GetExpense(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

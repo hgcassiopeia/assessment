@@ -73,3 +73,54 @@ func TestAddNewExpense(t *testing.T) {
 		}
 	})
 }
+
+func TestGetExpense(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mock.NewMockRepository(ctrl)
+
+	t.Run("Success - TestGetExpense", func(t *testing.T) {
+		// Arrange
+		given := "1"
+		expected := &entities.Expenses{
+			Id:     0,
+			Title:  "",
+			Amount: 0,
+			Note:   "",
+			Tags:   []string{},
+		}
+
+		mockRepo.EXPECT().GetExpense(given).Return(expected, nil)
+
+		// Act
+		service := Init(mockRepo)
+		result, err := service.GetExpense(given)
+
+		// Assert
+		if assert.NoError(t, err) {
+			assert.Equal(t, expected.Id, result.Id)
+			assert.Equal(t, expected.Title, result.Title)
+			assert.Equal(t, expected.Amount, result.Amount)
+			assert.Equal(t, expected.Note, result.Note)
+			assert.Equal(t, expected.Tags, result.Tags)
+		}
+	})
+
+	t.Run("Fail - TestGetExpense", func(t *testing.T) {
+		// Arrange
+		given := "1"
+
+		expected := fmt.Errorf("error service get expenses detail")
+		mockRepo.EXPECT().GetExpense(given).Return(nil, expected)
+
+		// Act
+		service := Init(mockRepo)
+		_, err := service.GetExpense(given)
+
+		// Assert
+		if err != nil {
+			assert.Equal(t, expected, err)
+		}
+	})
+}

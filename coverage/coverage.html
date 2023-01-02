@@ -57,7 +57,7 @@
 				
 				<option value="file0">github.com/hgcassiopeia/assessment/expenses/repo/repository.go (100.0%)</option>
 				
-				<option value="file1">github.com/hgcassiopeia/assessment/expenses/service/service.go (83.3%)</option>
+				<option value="file1">github.com/hgcassiopeia/assessment/expenses/service/service.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -143,9 +143,15 @@ func (u *UseCaseImpl) CreateExpense(expense *entities.Expenses) (*entities.Expen
         <span class="cov8" title="1">return result, nil</span>
 }
 
-func (u *UseCaseImpl) GetExpense(id string) (*entities.Expenses, error) <span class="cov0" title="0">{
-        return &amp;entities.Expenses{}, nil
-}</span>
+func (u *UseCaseImpl) GetExpense(id string) (*entities.Expenses, error) <span class="cov8" title="1">{
+        result, err := u.Repository.GetExpense(id)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return result, nil</span>
+}
 </pre>
 		
 		</div>
