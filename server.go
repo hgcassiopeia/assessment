@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,22 +12,34 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/hgcassiopeia/assessment/expenses"
+	"github.com/hgcassiopeia/assessment/expenses/drivers"
+	"github.com/hgcassiopeia/assessment/expenses/handler"
+	"github.com/hgcassiopeia/assessment/expenses/repo"
+	"github.com/hgcassiopeia/assessment/expenses/service"
 )
 
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
-}
-
 func main() {
-	expenses.InitDB()
+	dbConn, err := drivers.ConnectDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer dbConn.Close()
 
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", hello)
+	err = drivers.InitTable(dbConn)
+	if err != nil {
+		e.Logger.Fatal(err.Error())
+	}
+
+	expensesRepository := repo.InitRepository(dbConn)
+	expenseUseCase := service.Init(expensesRepository)
+	httpHandler := handler.HttpHandler{UseCase: expenseUseCase}
+
+	e.POST("/expenses", httpHandler.AddNewExpense)
 
 	go func() {
 		serverPort := ":" + os.Getenv("PORT")
