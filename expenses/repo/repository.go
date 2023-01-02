@@ -27,5 +27,11 @@ func (r *RepoImpl) CreateExpense(expense *entities.Expenses) (*entities.Expenses
 }
 
 func (r *RepoImpl) GetExpense(id string) (entities.Expenses, error) {
-	return entities.Expenses{}, nil
+	return entities.Expenses{
+		Id:     1,
+		Title:  "Isakaya Bangna",
+		Amount: 899,
+		Note:   "central bangna",
+		Tags:   []string{"food", "beverage"},
+	}, nil
 }
