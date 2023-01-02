@@ -10,6 +10,9 @@ services:
       dockerfile: ./Dockerfile.test
     volumes:
       - $PWD:/go/src/target
+    environment:
+      DATABASE_URL: postgres://root:root@test_db:5432/assessment-test-db?sslmode=disable
+      PORT: 2565
     depends_on:
       - test_db
     networks:
@@ -21,7 +24,9 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: assessment-test-db
-    restart: on-failure
+    ports:
+      - "5432:5432"
+    restart: always
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     networks:

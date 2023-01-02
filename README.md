@@ -1,3 +1,29 @@
+# About this project
+
+## For production
+- Run command:
+	```
+	$ docker-compose up
+	```
+## For development
+- Start database server for development with command:
+	```
+	$ docker-compose -f docker-compose.dev.yml up -d
+	```
+- Start application server with command:
+	```
+	$ make start
+	```
+
+## Testing
+- unit test of service and repo run command:
+	```
+	$ make test
+	```
+- Integration test of handler run command:
+	```
+	$ docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test_app
+	```
 # Prerequisites
 * โปรเจคตั้งต้นคือ[โปรเจคนี้](https://github.com/KKGo-Software-engineering/assessment)
 * กำหนดให้ส่งลิ้งค์คำตอบคือ github repository ที่เก็บโค้ดของคุณ `https://github.com/<your github name>/assessment`

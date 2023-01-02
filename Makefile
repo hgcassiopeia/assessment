@@ -10,6 +10,9 @@ start:
 check:
 	staticcheck ./...
 
+test:
+	go test -v ./...
+
 cover:
 	go test -v ./... -cover -coverprofile=coverage/cover.out && \
 	go tool cover -html=coverage/cover.out -o coverage/coverage.html

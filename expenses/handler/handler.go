@@ -23,7 +23,21 @@ func (h *HttpHandler) AddNewExpense(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, Error{Message: err.Error()})
 	}
 
-	h.UseCase.CreateExpense(&expenses)
+	result, err := h.UseCase.CreateExpense(&expenses)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Error{Message: err.Error()})
+	}
 
-	return c.JSON(http.StatusCreated, expenses)
+	return c.JSON(http.StatusCreated, &result)
+}
+
+func (h *HttpHandler) GetExpenseDetail(c echo.Context) error {
+	id := c.Param("id")
+
+	result, err := h.UseCase.GetExpense(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Error{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
