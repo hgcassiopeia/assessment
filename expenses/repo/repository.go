@@ -25,3 +25,7 @@ func (r *RepoImpl) CreateExpense(expense *entities.Expenses) (*entities.Expenses
 
 	return expense, nil
 }
+
+func (r *RepoImpl) GetExpense(id string) (entities.Expenses, error) {
+	return entities.Expenses{}, nil
+}

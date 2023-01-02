@@ -49,6 +49,21 @@ func (mr *MockRepositoryMockRecorder) CreateExpense(expense interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateExpense", reflect.TypeOf((*MockRepository)(nil).CreateExpense), expense)
 }
 
+// GetExpense mocks base method.
+func (m *MockRepository) GetExpense(id string) (entities.Expenses, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExpense", id)
+	ret0, _ := ret[0].(entities.Expenses)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetExpense indicates an expected call of GetExpense.
+func (mr *MockRepositoryMockRecorder) GetExpense(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpense", reflect.TypeOf((*MockRepository)(nil).GetExpense), id)
+}
+
 // MockUseCase is a mock of UseCase interface.
 type MockUseCase struct {
 	ctrl     *gomock.Controller
@@ -85,4 +100,19 @@ func (m *MockUseCase) CreateExpense(expense *entities.Expenses) (*entities.Expen
 func (mr *MockUseCaseMockRecorder) CreateExpense(expense interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateExpense", reflect.TypeOf((*MockUseCase)(nil).CreateExpense), expense)
+}
+
+// GetExpense mocks base method.
+func (m *MockUseCase) GetExpense(id string) (entities.Expenses, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExpense", id)
+	ret0, _ := ret[0].(entities.Expenses)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetExpense indicates an expected call of GetExpense.
+func (mr *MockUseCaseMockRecorder) GetExpense(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpense", reflect.TypeOf((*MockUseCase)(nil).GetExpense), id)
 }

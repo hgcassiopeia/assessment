@@ -40,6 +40,7 @@ func main() {
 	httpHandler := handler.HttpHandler{UseCase: expenseUseCase}
 
 	e.POST("/expenses", httpHandler.AddNewExpense)
+	e.GET("/expenses/:id", httpHandler.AddNewExpense)
 
 	go func() {
 		serverPort := ":" + os.Getenv("PORT")
