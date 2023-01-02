@@ -23,6 +23,6 @@ func (u *UseCaseImpl) CreateExpense(expense *entities.Expenses) (*entities.Expen
 	return result, nil
 }
 
-func (u *UseCaseImpl) GetExpense(id string) (entities.Expenses, error) {
-	return entities.Expenses{}, nil
+func (u *UseCaseImpl) GetExpense(id string) (*entities.Expenses, error) {
+	return &entities.Expenses{}, nil
 }

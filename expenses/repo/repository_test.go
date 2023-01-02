@@ -17,6 +17,8 @@ func TestCreateExpense(t *testing.T) {
 	defer db.Close()
 	repo := InitRepository(db)
 
+	statement := "INSERT INTO expenses"
+
 	t.Run("Success - TestCreateExpense", func(t *testing.T) {
 		// Arrange
 		given := &entities.Expenses{
@@ -34,7 +36,7 @@ func TestCreateExpense(t *testing.T) {
 			Tags:   []string{"food", "beverage"},
 		}
 
-		mock.ExpectQuery("INSERT INTO expenses").
+		mock.ExpectQuery(statement).
 			WithArgs(given.Title, given.Amount, given.Note, pq.Array(given.Tags)).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expected.Id))
 
@@ -60,10 +62,11 @@ func TestCreateExpense(t *testing.T) {
 			Tags:   []string{"food", "beverage"},
 		}
 
-		expected := fmt.Errorf("error insert expenses")
-		mock.ExpectQuery("INSERT INTO expenses").
+		mockErr := fmt.Errorf("something went wrong")
+		expected := fmt.Errorf("can't Scan row into variables : something went wrong")
+		mock.ExpectQuery(statement).
 			WithArgs(given.Title, given.Amount, given.Note, pq.Array(given.Tags)).
-			WillReturnError(expected)
+			WillReturnError(mockErr)
 
 		// Act
 		_, err := repo.CreateExpense(given)
@@ -81,6 +84,8 @@ func TestGetExpense(t *testing.T) {
 	defer db.Close()
 	repo := InitRepository(db)
 
+	statement := "SELECT (.+) FROM expenses WHERE id=(.+)"
+
 	t.Run("Success - TestGetExpense", func(t *testing.T) {
 		// Arrange
 		given := "1"
@@ -95,9 +100,7 @@ func TestGetExpense(t *testing.T) {
 		}
 		expectedRow := sqlmock.NewRows(columns).AddRow(expected.Id, expected.Title, expected.Amount, expected.Note, pq.Array(expected.Tags))
 
-		mock.ExpectQuery("SELECT \\* FROM expenses WHERE id = \\?").
-			WithArgs(given).
-			WillReturnRows(expectedRow)
+		mock.ExpectPrepare(statement).ExpectQuery().WithArgs(given).WillReturnRows(expectedRow)
 
 		// Act
 		result, err := repo.GetExpense(given)
@@ -109,6 +112,42 @@ func TestGetExpense(t *testing.T) {
 			assert.Equal(t, expected.Amount, result.Amount)
 			assert.Equal(t, expected.Note, result.Note)
 			assert.Equal(t, expected.Tags, result.Tags)
+		}
+	})
+
+	t.Run("Fail - TestGetExpense prepare query failed", func(t *testing.T) {
+		// Arrange
+		given := "1"
+
+		mockErr := fmt.Errorf("something went wrong")
+		expected := fmt.Errorf("can't prepare query one row statment : something went wrong")
+
+		mock.ExpectPrepare(statement).WillReturnError(mockErr)
+
+		// Act
+		_, err := repo.GetExpense(given)
+
+		// Assert
+		if err != nil {
+			assert.Equal(t, expected, err)
+		}
+	})
+
+	t.Run("Fail - TestGetExpense scan row into variable failed", func(t *testing.T) {
+		// Arrange
+		given := "1"
+
+		mockErr := fmt.Errorf("something went wrong")
+		expected := fmt.Errorf("can't Scan row into variables : something went wrong")
+
+		mock.ExpectPrepare(statement).ExpectQuery().WithArgs(given).WillReturnError(mockErr)
+
+		// Act
+		_, err := repo.GetExpense(given)
+
+		// Assert
+		if err != nil {
+			assert.Equal(t, expected, err)
 		}
 	})
 }

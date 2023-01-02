@@ -50,10 +50,10 @@ func (mr *MockRepositoryMockRecorder) CreateExpense(expense interface{}) *gomock
 }
 
 // GetExpense mocks base method.
-func (m *MockRepository) GetExpense(id string) (entities.Expenses, error) {
+func (m *MockRepository) GetExpense(id string) (*entities.Expenses, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetExpense", id)
-	ret0, _ := ret[0].(entities.Expenses)
+	ret0, _ := ret[0].(*entities.Expenses)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -103,10 +103,10 @@ func (mr *MockUseCaseMockRecorder) CreateExpense(expense interface{}) *gomock.Ca
 }
 
 // GetExpense mocks base method.
-func (m *MockUseCase) GetExpense(id string) (entities.Expenses, error) {
+func (m *MockUseCase) GetExpense(id string) (*entities.Expenses, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetExpense", id)
-	ret0, _ := ret[0].(entities.Expenses)
+	ret0, _ := ret[0].(*entities.Expenses)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
