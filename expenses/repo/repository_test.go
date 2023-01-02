@@ -19,17 +19,17 @@ func TestCreateExpense(t *testing.T) {
 	repo := InitRepository(db)
 
 	given := &entities.Expenses{
-		Title:  "strawberry smoothie",
-		Amount: 79,
-		Note:   "night market promotion discount 10 bath",
+		Title:  "Isakaya Bangna",
+		Amount: 899,
+		Note:   "central bangna",
 		Tags:   []string{"food", "beverage"},
 	}
 
 	expected := entities.Expenses{
 		Id:     1,
-		Title:  "strawberry smoothie",
-		Amount: 79,
-		Note:   "night market promotion discount 10 bath",
+		Title:  "Isakaya Bangna",
+		Amount: 899,
+		Note:   "central bangna",
 		Tags:   []string{"food", "beverage"},
 	}
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,13 +19,13 @@ import (
 )
 
 func main() {
-	e := echo.New()
-
 	dbConn, err := drivers.ConnectDB()
 	if err != nil {
-		e.Logger.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 	defer dbConn.Close()
+
+	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

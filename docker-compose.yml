@@ -12,8 +12,8 @@ services:
     ports:
       - "2565:2565"
     environment:
-      - DATABASE_URL=postgres://root:root@db:5432/assessment-db?sslmode=disable
-      - PORT=2565
+      DATABASE_URL: postgres://root:root@db:5432/assessment-db?sslmode=disable
+      PORT: 2565
     depends_on:
       - db
     networks:
@@ -23,9 +23,9 @@ services:
     image: postgres:12.12
     restart: always
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=assessment-db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: assessment-db
     ports:
       - "5432:5432"
     volumes:
