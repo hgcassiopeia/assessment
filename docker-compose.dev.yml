@@ -1,0 +1,19 @@
+version: "3.2"
+
+networks:
+  assessment-dev-network:
+
+services:
+  db:
+    image: postgres:12.12
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: assessment-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - assessment-dev-network

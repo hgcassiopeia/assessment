@@ -1,0 +1,9 @@
+mode: set
+github.com/hgcassiopeia/assessment/expenses/service/service.go:12.62,14.2 1 1
+github.com/hgcassiopeia/assessment/expenses/service/service.go:16.93,19.16 2 1
+github.com/hgcassiopeia/assessment/expenses/service/service.go:23.2,23.20 1 1
+github.com/hgcassiopeia/assessment/expenses/service/service.go:19.16,21.3 1 0
+github.com/hgcassiopeia/assessment/expenses/repo/repository.go:15.55,17.2 1 1
+github.com/hgcassiopeia/assessment/expenses/repo/repository.go:19.90,22.16 3 1
+github.com/hgcassiopeia/assessment/expenses/repo/repository.go:26.2,26.21 1 1
+github.com/hgcassiopeia/assessment/expenses/repo/repository.go:22.16,24.3 1 0

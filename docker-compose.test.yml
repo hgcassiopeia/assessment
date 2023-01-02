@@ -20,7 +20,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: assessment-db
+      POSTGRES_DB: assessment-test-db
     restart: on-failure
     volumes:
       - ./db:/docker-entrypoint-initdb.d
