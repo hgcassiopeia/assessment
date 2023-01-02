@@ -18,15 +18,18 @@ import (
 )
 
 func main() {
-	dbConn := drivers.ConnectDB()
-	defer dbConn.Close()
-
 	e := echo.New()
+
+	dbConn, err := drivers.ConnectDB()
+	if err != nil {
+		e.Logger.Fatal(err.Error())
+	}
+	defer dbConn.Close()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	err := drivers.InitTable(dbConn)
+	err = drivers.InitTable(dbConn)
 	if err != nil {
 		e.Logger.Fatal(err.Error())
 	}

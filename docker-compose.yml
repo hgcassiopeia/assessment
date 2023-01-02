@@ -1,17 +1,34 @@
-version: '3.2'
+version: "3.2"
 
 networks:
   assessment-network:
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "2565:2565"
+    environment:
+      - DATABASE_URL=postgres://root:root@db:5432/assessment-db?sslmode=disable
+      - PORT=2565
+    depends_on:
+      - db
+    networks:
+      - assessment-network
+
   db:
     image: postgres:12.12
+    restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: assessment-db
-    restart: on-failure
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=assessment-db
     ports:
-      - '5432:5432'
+      - "5432:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
     networks:
       - assessment-network

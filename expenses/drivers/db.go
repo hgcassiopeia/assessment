@@ -6,13 +6,14 @@ import (
 	"os"
 )
 
-func ConnectDB() *sql.DB {
+func ConnectDB() (*sql.DB, error) {
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal("Connect to database error", err)
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }
 
 func InitTable(db *sql.DB) error {
