@@ -65,18 +65,18 @@ func (mr *MockRepositoryMockRecorder) GetExpense(id interface{}) *gomock.Call {
 }
 
 // UpdateExpense mocks base method.
-func (m *MockRepository) UpdateExpense(id string) (*entities.Expenses, error) {
+func (m *MockRepository) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateExpense", id)
+	ret := m.ctrl.Call(m, "UpdateExpense", id, newExpense)
 	ret0, _ := ret[0].(*entities.Expenses)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateExpense indicates an expected call of UpdateExpense.
-func (mr *MockRepositoryMockRecorder) UpdateExpense(id interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) UpdateExpense(id, newExpense interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateExpense", reflect.TypeOf((*MockRepository)(nil).UpdateExpense), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateExpense", reflect.TypeOf((*MockRepository)(nil).UpdateExpense), id, newExpense)
 }
 
 // MockUseCase is a mock of UseCase interface.
@@ -133,16 +133,16 @@ func (mr *MockUseCaseMockRecorder) GetExpense(id interface{}) *gomock.Call {
 }
 
 // UpdateExpense mocks base method.
-func (m *MockUseCase) UpdateExpense(id string) (*entities.Expenses, error) {
+func (m *MockUseCase) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateExpense", id)
+	ret := m.ctrl.Call(m, "UpdateExpense", id, newExpense)
 	ret0, _ := ret[0].(*entities.Expenses)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateExpense indicates an expected call of UpdateExpense.
-func (mr *MockUseCaseMockRecorder) UpdateExpense(id interface{}) *gomock.Call {
+func (mr *MockUseCaseMockRecorder) UpdateExpense(id, newExpense interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateExpense", reflect.TypeOf((*MockUseCase)(nil).UpdateExpense), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateExpense", reflect.TypeOf((*MockUseCase)(nil).UpdateExpense), id, newExpense)
 }
