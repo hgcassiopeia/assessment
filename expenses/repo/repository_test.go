@@ -12,7 +12,6 @@ import (
 )
 
 func TestCreateExpense(t *testing.T) {
-	// Arrange
 	db, mock := newSqlMock(t)
 	defer db.Close()
 	repo := InitRepository(db)
@@ -79,7 +78,6 @@ func TestCreateExpense(t *testing.T) {
 }
 
 func TestGetExpense(t *testing.T) {
-	// Arrange
 	db, mock := newSqlMock(t)
 	defer db.Close()
 	repo := InitRepository(db)
@@ -149,6 +147,22 @@ func TestGetExpense(t *testing.T) {
 		if err != nil {
 			assert.Equal(t, expected, err)
 		}
+	})
+}
+
+func TestUpdateExpense(t *testing.T) {
+	db, _ := newSqlMock(t)
+	defer db.Close()
+	repo := InitRepository(db)
+	t.Run("Success - TestUpdateExpense", func(t *testing.T) {
+		// Arrange
+		given := "1"
+
+		// Act
+		_, err := repo.UpdateExpense(given)
+
+		// Assert
+		assert.NoError(t, err)
 	})
 }
 
