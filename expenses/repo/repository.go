@@ -30,12 +30,29 @@ func (r *RepoImpl) CreateExpense(expense *entities.Expenses) (*entities.Expenses
 func (r *RepoImpl) GetExpense(id string) (*entities.Expenses, error) {
 	stmt, err := r.DB.Prepare("SELECT * FROM expenses WHERE id=$1")
 	if err != nil {
-		return nil, fmt.Errorf("can't prepare query one row statment : %v", err.Error())
+		return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
 	}
 
 	row := stmt.QueryRow(id)
-	var result entities.Expenses
 
+	var result entities.Expenses
+	err = row.Scan(&result.Id, &result.Title, &result.Amount, &result.Note, pq.Array(&result.Tags))
+	if err != nil {
+		return nil, fmt.Errorf("can't Scan row into variables : %v", err.Error())
+	}
+
+	return &result, nil
+}
+
+func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) {
+	stmt, err := r.DB.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1 RETURNING id, title, amount, note, tags")
+	if err != nil {
+		return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
+	}
+
+	row := stmt.QueryRow(id, newExpense.Title, newExpense.Amount, newExpense.Note, pq.Array(newExpense.Tags))
+
+	var result entities.Expenses
 	err = row.Scan(&result.Id, &result.Title, &result.Amount, &result.Note, pq.Array(&result.Tags))
 	if err != nil {
 		return nil, fmt.Errorf("can't Scan row into variables : %v", err.Error())

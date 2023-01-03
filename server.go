@@ -41,6 +41,7 @@ func main() {
 
 	e.POST("/expenses", httpHandler.AddNewExpense)
 	e.GET("/expenses/:id", httpHandler.GetExpenseDetail)
+	e.PUT("/expenses/:id", httpHandler.UpdateExpense)
 
 	go func() {
 		serverPort := ":" + os.Getenv("PORT")

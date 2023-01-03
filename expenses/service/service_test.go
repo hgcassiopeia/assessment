@@ -124,3 +124,62 @@ func TestGetExpense(t *testing.T) {
 		}
 	})
 }
+
+func TestUpdateExpense(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mock.NewMockRepository(ctrl)
+
+	t.Run("Success - TestUpdateExpense", func(t *testing.T) {
+		// Arrange
+		id := "1"
+		newExpense := &entities.Expenses{
+			Id:     1,
+			Title:  "Isakaya Bangna",
+			Amount: 990,
+			Note:   "Central bangna near by BigC",
+			Tags:   []string{"food", "beverage"},
+		}
+		expected := &entities.Expenses{
+			Id:     1,
+			Title:  "Isakaya Bangna",
+			Amount: 990,
+			Note:   "Central bangna near by BigC",
+			Tags:   []string{"food", "beverage"},
+		}
+
+		mockRepo.EXPECT().UpdateExpense(id, newExpense).Return(expected, nil)
+
+		// Act
+		service := Init(mockRepo)
+		result, err := service.UpdateExpense(id, newExpense)
+
+		// Assert
+		if assert.NoError(t, err) {
+			assert.Equal(t, expected.Id, result.Id)
+			assert.Equal(t, expected.Title, result.Title)
+			assert.Equal(t, expected.Amount, result.Amount)
+			assert.Equal(t, expected.Note, result.Note)
+			assert.Equal(t, expected.Tags, result.Tags)
+		}
+	})
+
+	t.Run("Fail - TestUpdateExpense", func(t *testing.T) {
+		// Arrange
+		id := "1"
+		newExpense := entities.Expenses{}
+
+		expected := fmt.Errorf("error service update expenses")
+		mockRepo.EXPECT().UpdateExpense(id, &newExpense).Return(nil, expected)
+
+		// Act
+		service := Init(mockRepo)
+		_, err := service.UpdateExpense(id, &newExpense)
+
+		// Assert
+		if err != nil {
+			assert.Equal(t, expected, err)
+		}
+	})
+}
