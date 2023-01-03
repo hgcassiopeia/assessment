@@ -32,3 +32,7 @@ func (u *UseCaseImpl) GetExpense(id string) (*entities.Expenses, error) {
 
 	return result, nil
 }
+
+func (u *UseCaseImpl) UpdateExpense(id string) (*entities.Expenses, error) {
+	return nil, nil
+}

@@ -43,3 +43,7 @@ func (r *RepoImpl) GetExpense(id string) (*entities.Expenses, error) {
 
 	return &result, nil
 }
+
+func (r *RepoImpl) UpdateExpense(id string) (*entities.Expenses, error) {
+	return nil, nil
+}
