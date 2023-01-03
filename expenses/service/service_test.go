@@ -168,13 +168,14 @@ func TestUpdateExpense(t *testing.T) {
 	t.Run("Fail - TestUpdateExpense", func(t *testing.T) {
 		// Arrange
 		id := "1"
+		newExpense := entities.Expenses{}
 
 		expected := fmt.Errorf("error service update expenses")
-		mockRepo.EXPECT().GetExpense(id).Return(nil, expected)
+		mockRepo.EXPECT().UpdateExpense(id, &newExpense).Return(nil, expected)
 
 		// Act
 		service := Init(mockRepo)
-		_, err := service.GetExpense(id)
+		_, err := service.UpdateExpense(id, &newExpense)
 
 		// Assert
 		if err != nil {

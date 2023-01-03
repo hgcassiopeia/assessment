@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>repo: Go Coverage Report</title>
+		<title>handler: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,9 +55,11 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/hgcassiopeia/assessment/expenses/repo/repository.go (100.0%)</option>
+				<option value="file0">github.com/hgcassiopeia/assessment/expenses/handler/handler.go (86.4%)</option>
 				
-				<option value="file1">github.com/hgcassiopeia/assessment/expenses/service/service.go (90.0%)</option>
+				<option value="file1">github.com/hgcassiopeia/assessment/expenses/repo/repository.go (100.0%)</option>
+				
+				<option value="file2">github.com/hgcassiopeia/assessment/expenses/service/service.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -71,7 +73,68 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package repo
+		<pre class="file" id="file0" style="display: none">package handler
+
+import (
+        "net/http"
+
+        "github.com/hgcassiopeia/assessment/expenses"
+        "github.com/hgcassiopeia/assessment/expenses/entities"
+        "github.com/labstack/echo/v4"
+)
+
+type Error struct {
+        Message string `json:"message"`
+}
+
+type HttpHandler struct {
+        UseCase expenses.UseCase
+}
+
+func (h *HttpHandler) AddNewExpense(c echo.Context) error <span class="cov8" title="1">{
+        var expenses entities.Expenses
+        err := c.Bind(&amp;expenses)
+        if err != nil </span><span class="cov8" title="1">{
+                return c.JSON(http.StatusBadRequest, Error{Message: err.Error()})
+        }</span>
+
+        <span class="cov8" title="1">result, err := h.UseCase.CreateExpense(&amp;expenses)
+        if err != nil </span><span class="cov0" title="0">{
+                return c.JSON(http.StatusInternalServerError, Error{Message: err.Error()})
+        }</span>
+
+        <span class="cov8" title="1">return c.JSON(http.StatusCreated, &amp;result)</span>
+}
+
+func (h *HttpHandler) GetExpenseDetail(c echo.Context) error <span class="cov8" title="1">{
+        id := c.Param("id")
+
+        result, err := h.UseCase.GetExpense(id)
+        if err != nil </span><span class="cov0" title="0">{
+                return c.JSON(http.StatusInternalServerError, Error{Message: err.Error()})
+        }</span>
+
+        <span class="cov8" title="1">return c.JSON(http.StatusOK, result)</span>
+}
+
+func (h *HttpHandler) UpdateExpense(c echo.Context) error <span class="cov8" title="1">{
+        id := c.Param("id")
+        var expenses entities.Expenses
+        err := c.Bind(&amp;expenses)
+        if err != nil </span><span class="cov8" title="1">{
+                return c.JSON(http.StatusBadRequest, Error{Message: err.Error()})
+        }</span>
+
+        <span class="cov8" title="1">result, err := h.UseCase.UpdateExpense(id, &amp;expenses)
+        if err != nil </span><span class="cov0" title="0">{
+                return c.JSON(http.StatusInternalServerError, Error{Message: err.Error()})
+        }</span>
+
+        <span class="cov8" title="1">return c.JSON(http.StatusOK, result)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package repo
 
 import (
         "database/sql"
@@ -118,12 +181,12 @@ func (r *RepoImpl) GetExpense(id string) (*entities.Expenses, error) <span class
 }
 
 func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) <span class="cov8" title="1">{
-        stmt, err := r.DB.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1")
+        stmt, err := r.DB.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1 RETURNING id, title, amount, note, tags")
         if err != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
         }</span>
 
-        <span class="cov8" title="1">row := stmt.QueryRow(id)
+        <span class="cov8" title="1">row := stmt.QueryRow(id, newExpense.Title, newExpense.Amount, newExpense.Note, pq.Array(newExpense.Tags))
 
         var result entities.Expenses
         err = row.Scan(&amp;result.Id, &amp;result.Title, &amp;result.Amount, &amp;result.Note, pq.Array(&amp;result.Tags))
@@ -135,7 +198,7 @@ func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*ent
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package service
+		<pre class="file" id="file2" style="display: none">package service
 
 import (
         "github.com/hgcassiopeia/assessment/expenses"
@@ -170,9 +233,15 @@ func (u *UseCaseImpl) GetExpense(id string) (*entities.Expenses, error) <span cl
         <span class="cov8" title="1">return result, nil</span>
 }
 
-func (u *UseCaseImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) <span class="cov0" title="0">{
-        return nil, nil
-}</span>
+func (u *UseCaseImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) <span class="cov8" title="1">{
+        result, err := u.Repository.UpdateExpense(id, newExpense)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return result, nil</span>
+}
 </pre>
 		
 		</div>

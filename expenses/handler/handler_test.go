@@ -45,6 +45,7 @@ func (s *ExpensesTestSuite) SetupSuite() {
 	s.app = *echo.New()
 	s.app.POST("/expenses", httpHandler.AddNewExpense)
 	s.app.GET("/expenses/:id", httpHandler.GetExpenseDetail)
+	s.app.PUT("/expenses/:id", httpHandler.UpdateExpense)
 
 	go func() {
 		serverPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
@@ -117,6 +118,57 @@ func (s *ExpensesTestSuite) TestGetExpenseDetail() {
 
 	if err == nil {
 		assert.Equal(s.T(), http.StatusOK, response.StatusCode)
+	}
+}
+
+func (s *ExpensesTestSuite) TestUpdateExpense() {
+	body := bytes.NewBufferString(`{
+		"id": 1,
+		"title": "Isakaya Bangna",
+		"amount": 1000,
+		"note": "Central bangna near by BigC", 
+		"tags": ["food", "beverage"]
+	}`)
+
+	id := "1"
+	var result entities.Expenses
+	response := request(http.MethodPut, uri("expenses", id), body)
+	err := response.Decode(&result)
+
+	expected := entities.Expenses{
+		Id:     1,
+		Title:  "Isakaya Bangna",
+		Amount: float32(1000),
+		Note:   "Central bangna near by BigC",
+		Tags:   []string{"food", "beverage"},
+	}
+
+	if err == nil {
+		assert.Equal(s.T(), http.StatusOK, response.StatusCode)
+		assert.Equal(s.T(), expected.Id, result.Id)
+		assert.Equal(s.T(), expected.Title, result.Title)
+		assert.Equal(s.T(), expected.Amount, result.Amount)
+		assert.Equal(s.T(), expected.Note, result.Note)
+		assert.ElementsMatch(s.T(), expected.Tags, result.Tags)
+	}
+}
+
+func (s *ExpensesTestSuite) TestUpdateExpense_BadRequest() {
+	id := "1"
+	body := bytes.NewBufferString(`{
+		"id": "1",
+		"title": "Isakaya Bangna",
+		"amount": "899",
+		"note": "central bangna",
+		"tags": ["food", "beverage"]
+	}`)
+
+	var exp entities.Expenses
+	response := request(http.MethodPut, uri("expenses", id), body)
+	err := response.Decode(&exp)
+
+	if err != nil {
+		assert.Equal(s.T(), http.StatusBadRequest, response.StatusCode)
 	}
 }
 

@@ -155,11 +155,18 @@ func TestUpdateExpense(t *testing.T) {
 	defer db.Close()
 	repo := InitRepository(db)
 
-	statement := "UPDATE expenses SET (.+) WHERE id=(.+)"
+	statement := "UPDATE expenses SET (.+) WHERE id=(.+) RETURNING (.+)"
 
 	t.Run("Success - TestUpdateExpense", func(t *testing.T) {
 		// Arrange
 		id := "1"
+		newExpense := entities.Expenses{
+			Id:     1,
+			Title:  "Isakaya Bangna",
+			Amount: 990,
+			Note:   "Central bangna near by BigC",
+			Tags:   []string{"food", "beverage"},
+		}
 
 		columns := []string{"id", "title", "amount", "note", "tags"}
 		expected := entities.Expenses{
@@ -170,7 +177,7 @@ func TestUpdateExpense(t *testing.T) {
 			Tags:   []string{"food", "beverage"},
 		}
 		expectedRow := sqlmock.NewRows(columns).AddRow(expected.Id, expected.Title, expected.Amount, expected.Note, pq.Array(expected.Tags))
-		mock.ExpectPrepare(statement).ExpectQuery().WithArgs(id).WillReturnRows(expectedRow)
+		mock.ExpectPrepare(statement).ExpectQuery().WithArgs(id, newExpense.Title, newExpense.Amount, newExpense.Note, pq.Array(newExpense.Tags)).WillReturnRows(expectedRow)
 
 		// Act
 		result, err := repo.UpdateExpense(id, &expected)
@@ -207,12 +214,18 @@ func TestUpdateExpense(t *testing.T) {
 	t.Run("Fail - TestUpdateExpense scan row into variable failed", func(t *testing.T) {
 		// Arrange
 		id := "1"
-		newExpense := entities.Expenses{}
+		newExpense := entities.Expenses{
+			Id:     1,
+			Title:  "Isakaya Bangna",
+			Amount: 990,
+			Note:   "Central bangna near by BigC",
+			Tags:   []string{"food", "beverage"},
+		}
 
 		mockErr := fmt.Errorf("something went wrong")
 		expected := fmt.Errorf("can't Scan row into variables : something went wrong")
 
-		mock.ExpectPrepare(statement).ExpectQuery().WithArgs(id).WillReturnError(mockErr)
+		mock.ExpectPrepare(statement).ExpectQuery().WithArgs(id, newExpense.Title, newExpense.Amount, newExpense.Note, pq.Array(newExpense.Tags)).WillReturnError(mockErr)
 
 		// Act
 		_, err := repo.UpdateExpense(id, &newExpense)

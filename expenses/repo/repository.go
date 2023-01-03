@@ -50,7 +50,7 @@ func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*ent
 		return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
 	}
 
-	row := stmt.QueryRow(id)
+	row := stmt.QueryRow(id, newExpense.Title, newExpense.Amount, newExpense.Note, pq.Array(newExpense.Tags))
 
 	var result entities.Expenses
 	err = row.Scan(&result.Id, &result.Title, &result.Amount, &result.Note, pq.Array(&result.Tags))
