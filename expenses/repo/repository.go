@@ -45,7 +45,7 @@ func (r *RepoImpl) GetExpense(id string) (*entities.Expenses, error) {
 }
 
 func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) {
-	stmt, err := r.DB.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1")
+	stmt, err := r.DB.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1 RETURNING id, title, amount, note, tags")
 	if err != nil {
 		return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
 	}
