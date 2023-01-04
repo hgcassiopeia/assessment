@@ -5,14 +5,12 @@ networks:
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     restart: always
     ports:
       - "2565:2565"
     environment:
-      DATABASE_URL: postgres://root:root@db:5432/assessment-db?sslmode=disable
+      DATABASE_URL: postgres://root:root@db:5432/assessment-prod-db?sslmode=disable
       PORT: 2565
     depends_on:
       - db
@@ -22,10 +20,12 @@ services:
   db:
     image: postgres:12.12
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: assessment-db
+      POSTGRES_DB: assessment-prod-db
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     networks:

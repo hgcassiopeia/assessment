@@ -23,8 +23,8 @@ github.com/hgcassiopeia/assessment/expenses/repo/repository.go:78.18,81.17 3 1
 github.com/hgcassiopeia/assessment/expenses/repo/repository.go:84.3,84.31 1 1
 github.com/hgcassiopeia/assessment/expenses/repo/repository.go:81.17,83.4 1 1
 github.com/hgcassiopeia/assessment/expenses/handler/handler.go:19.59,22.16 3 1
-github.com/hgcassiopeia/assessment/expenses/handler/handler.go:26.2,27.16 2 0
-github.com/hgcassiopeia/assessment/expenses/handler/handler.go:31.2,31.44 1 0
+github.com/hgcassiopeia/assessment/expenses/handler/handler.go:26.2,27.16 2 1
+github.com/hgcassiopeia/assessment/expenses/handler/handler.go:31.2,31.44 1 1
 github.com/hgcassiopeia/assessment/expenses/handler/handler.go:22.16,24.3 1 1
 github.com/hgcassiopeia/assessment/expenses/handler/handler.go:27.16,29.3 1 0
 github.com/hgcassiopeia/assessment/expenses/handler/handler.go:34.62,38.16 3 1
