@@ -14,6 +14,7 @@ import (
 
 	"github.com/hgcassiopeia/assessment/expenses/drivers"
 	"github.com/hgcassiopeia/assessment/expenses/handler"
+	custom "github.com/hgcassiopeia/assessment/expenses/middleware"
 	"github.com/hgcassiopeia/assessment/expenses/repo"
 	"github.com/hgcassiopeia/assessment/expenses/service"
 )
@@ -25,19 +26,18 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	e := echo.New()
+	expensesRepository := repo.InitRepository(dbConn)
+	expenseUseCase := service.Init(expensesRepository)
+	httpHandler := handler.HttpHandler{UseCase: expenseUseCase}
 
+	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
+	e.Use(custom.AuthMiddleware)
 	err = drivers.InitTable(dbConn)
 	if err != nil {
 		e.Logger.Fatal(err.Error())
 	}
-
-	expensesRepository := repo.InitRepository(dbConn)
-	expenseUseCase := service.Init(expensesRepository)
-	httpHandler := handler.HttpHandler{UseCase: expenseUseCase}
 
 	e.POST("/expenses", httpHandler.AddNewExpense)
 	e.GET("/expenses", httpHandler.GetExpenses)
