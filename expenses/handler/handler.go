@@ -57,3 +57,12 @@ func (h *HttpHandler) UpdateExpense(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+func (h *HttpHandler) GetExpenses(c echo.Context) error {
+	result, err := h.UseCase.GetExpenseList()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Error{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}

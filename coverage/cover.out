@@ -9,7 +9,9 @@ github.com/hgcassiopeia/assessment/expenses/service/service.go:29.16,31.3 1 1
 github.com/hgcassiopeia/assessment/expenses/service/service.go:36.107,39.16 2 1
 github.com/hgcassiopeia/assessment/expenses/service/service.go:43.2,43.20 1 1
 github.com/hgcassiopeia/assessment/expenses/service/service.go:39.16,41.3 1 1
-github.com/hgcassiopeia/assessment/expenses/service/service.go:46.69,48.2 1 0
+github.com/hgcassiopeia/assessment/expenses/service/service.go:46.69,49.16 2 1
+github.com/hgcassiopeia/assessment/expenses/service/service.go:53.2,53.20 1 1
+github.com/hgcassiopeia/assessment/expenses/service/service.go:49.16,51.3 1 1
 github.com/hgcassiopeia/assessment/expenses/repo/repository.go:16.55,18.2 1 1
 github.com/hgcassiopeia/assessment/expenses/repo/repository.go:20.90,23.16 3 1
 github.com/hgcassiopeia/assessment/expenses/repo/repository.go:27.2,27.21 1 1

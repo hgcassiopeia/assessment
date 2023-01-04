@@ -62,7 +62,9 @@ func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*ent
 }
 
 func (r *RepoImpl) GetExpenseList() ([]entities.Expenses, error) {
-	stmt, err := r.DB.Prepare("SELECT * FROM expenses")
+	ordCol := "id"
+	statement := fmt.Sprintf("SELECT * FROM expenses ORDER BY %s ASC", ordCol)
+	stmt, err := r.DB.Prepare(statement)
 	if err != nil {
 		return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
 	}
