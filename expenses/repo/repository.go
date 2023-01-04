@@ -60,3 +60,27 @@ func (r *RepoImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*ent
 
 	return &result, nil
 }
+
+func (r *RepoImpl) GetExpenseList() ([]entities.Expenses, error) {
+	stmt, err := r.DB.Prepare("SELECT * FROM expenses")
+	if err != nil {
+		return nil, fmt.Errorf("can't prepare statment : %v", err.Error())
+	}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, fmt.Errorf("can't query all expense : %v", err.Error())
+	}
+
+	var result []entities.Expenses
+	for rows.Next() {
+		row := entities.Expenses{}
+		err = rows.Scan(&row.Id, &row.Title, &row.Amount, &row.Note, pq.Array(&row.Tags))
+		if err != nil {
+			return nil, fmt.Errorf("can't Scan row into variables : %v", err.Error())
+		}
+		result = append(result, row)
+	}
+
+	return result, nil
+}
