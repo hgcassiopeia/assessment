@@ -44,6 +44,7 @@ func (s *ExpensesTestSuite) SetupSuite() {
 
 	s.app = *echo.New()
 	s.app.POST("/expenses", httpHandler.AddNewExpense)
+	s.app.GET("/expenses", httpHandler.GetExpenses)
 	s.app.GET("/expenses/:id", httpHandler.GetExpenseDetail)
 	s.app.PUT("/expenses/:id", httpHandler.UpdateExpense)
 
@@ -100,12 +101,31 @@ func (s *ExpensesTestSuite) TestAddNewExpenses_BadRequest() {
 		"tags": ["food", "beverage"]
 	}`)
 
-	var exp entities.Expenses
 	response := request(http.MethodPost, uri("expenses"), body)
-	err := response.Decode(&exp)
 
-	if err != nil {
-		assert.Equal(s.T(), http.StatusBadRequest, response.StatusCode)
+	assert.Equal(s.T(), http.StatusBadRequest, response.StatusCode)
+}
+
+func (s *ExpensesTestSuite) TestGetExpenses() {
+	var result entities.Expenses
+	response := request(http.MethodGet, uri("expenses"), nil)
+	err := response.Decode(&result)
+
+	expected := entities.Expenses{
+		Id:     1,
+		Title:  "Isakaya Bangna",
+		Amount: float32(899),
+		Note:   "central bangna",
+		Tags:   []string{"food", "beverage"},
+	}
+
+	if err == nil {
+		assert.Equal(s.T(), http.StatusOK, response.StatusCode)
+		assert.Equal(s.T(), expected.Id, result.Id)
+		assert.Equal(s.T(), expected.Title, result.Title)
+		assert.Equal(s.T(), expected.Amount, result.Amount)
+		assert.Equal(s.T(), expected.Note, result.Note)
+		assert.ElementsMatch(s.T(), expected.Tags, result.Tags)
 	}
 }
 
@@ -163,13 +183,9 @@ func (s *ExpensesTestSuite) TestUpdateExpense_BadRequest() {
 		"tags": ["food", "beverage"]
 	}`)
 
-	var exp entities.Expenses
 	response := request(http.MethodPut, uri("expenses", id), body)
-	err := response.Decode(&exp)
 
-	if err != nil {
-		assert.Equal(s.T(), http.StatusBadRequest, response.StatusCode)
-	}
+	assert.Equal(s.T(), http.StatusBadRequest, response.StatusCode)
 }
 
 func uri(paths ...string) string {
