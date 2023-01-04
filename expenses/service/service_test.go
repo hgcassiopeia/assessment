@@ -68,9 +68,8 @@ func TestAddNewExpense(t *testing.T) {
 		_, err := service.CreateExpense(given)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
-		}
+		assert.Error(t, err)
+		assert.Equal(t, expected, err)
 	})
 }
 
@@ -119,9 +118,8 @@ func TestGetExpense(t *testing.T) {
 		_, err := service.GetExpense(given)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
-		}
+		assert.Error(t, err)
+		assert.Equal(t, expected, err)
 	})
 }
 
@@ -178,8 +176,51 @@ func TestUpdateExpense(t *testing.T) {
 		_, err := service.UpdateExpense(id, &newExpense)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
+		assert.Error(t, err)
+		assert.Equal(t, expected, err)
+	})
+}
+
+func TestGetExpenseList(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mock.NewMockRepository(ctrl)
+
+	t.Run("Success - TestGetExpenseList", func(t *testing.T) {
+		// Arrange
+		expected := []entities.Expenses{
+			{
+				Id:     1,
+				Title:  "Isakaya Bangna",
+				Amount: 899,
+				Note:   "central bangna",
+				Tags:   []string{"food", "beverage"},
+			},
 		}
+
+		mockRepo.EXPECT().GetExpenseList().Return(expected, nil)
+
+		// Act
+		service := Init(mockRepo)
+		result, _ := service.GetExpenseList()
+
+		// Assert
+		assert.Equal(t, expected, result)
+		assert.Len(t, expected, 1)
+	})
+
+	t.Run("Fail - TestGetExpenseList", func(t *testing.T) {
+		// Arrange
+		expected := fmt.Errorf("error service get expenses list")
+		mockRepo.EXPECT().GetExpenseList().Return(nil, expected)
+
+		// Act
+		service := Init(mockRepo)
+		_, err := service.GetExpenseList()
+
+		// Assert
+		assert.Error(t, err)
+		assert.Equal(t, expected, err)
 	})
 }

@@ -42,3 +42,13 @@ func (u *UseCaseImpl) UpdateExpense(id string, newExpense *entities.Expenses) (*
 
 	return result, nil
 }
+
+func (u *UseCaseImpl) GetExpenseList() ([]entities.Expenses, error) {
+	result, err := u.Repository.GetExpenseList()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

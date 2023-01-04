@@ -64,6 +64,21 @@ func (mr *MockRepositoryMockRecorder) GetExpense(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpense", reflect.TypeOf((*MockRepository)(nil).GetExpense), id)
 }
 
+// GetExpenseList mocks base method.
+func (m *MockRepository) GetExpenseList() ([]entities.Expenses, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExpenseList")
+	ret0, _ := ret[0].([]entities.Expenses)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetExpenseList indicates an expected call of GetExpenseList.
+func (mr *MockRepositoryMockRecorder) GetExpenseList() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpenseList", reflect.TypeOf((*MockRepository)(nil).GetExpenseList))
+}
+
 // UpdateExpense mocks base method.
 func (m *MockRepository) UpdateExpense(id string, newExpense *entities.Expenses) (*entities.Expenses, error) {
 	m.ctrl.T.Helper()
@@ -130,6 +145,21 @@ func (m *MockUseCase) GetExpense(id string) (*entities.Expenses, error) {
 func (mr *MockUseCaseMockRecorder) GetExpense(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpense", reflect.TypeOf((*MockUseCase)(nil).GetExpense), id)
+}
+
+// GetExpenseList mocks base method.
+func (m *MockUseCase) GetExpenseList() ([]entities.Expenses, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExpenseList")
+	ret0, _ := ret[0].([]entities.Expenses)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetExpenseList indicates an expected call of GetExpenseList.
+func (mr *MockUseCaseMockRecorder) GetExpenseList() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpenseList", reflect.TypeOf((*MockUseCase)(nil).GetExpenseList))
 }
 
 // UpdateExpense mocks base method.

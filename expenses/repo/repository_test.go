@@ -71,9 +71,7 @@ func TestCreateExpense(t *testing.T) {
 		_, err := repo.CreateExpense(given)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
-		}
+		assert.Equal(t, expected, err)
 	})
 }
 
@@ -126,9 +124,7 @@ func TestGetExpense(t *testing.T) {
 		_, err := repo.GetExpense(given)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
-		}
+		assert.Equal(t, expected, err)
 	})
 
 	t.Run("Fail - TestGetExpense scan row into variable failed", func(t *testing.T) {
@@ -144,9 +140,7 @@ func TestGetExpense(t *testing.T) {
 		_, err := repo.GetExpense(given)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
-		}
+		assert.Equal(t, expected, err)
 	})
 }
 
@@ -206,9 +200,7 @@ func TestUpdateExpense(t *testing.T) {
 		_, err := repo.UpdateExpense(id, &newExpense)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
-		}
+		assert.Equal(t, expected, err)
 	})
 
 	t.Run("Fail - TestUpdateExpense scan row into variable failed", func(t *testing.T) {
@@ -231,9 +223,91 @@ func TestUpdateExpense(t *testing.T) {
 		_, err := repo.UpdateExpense(id, &newExpense)
 
 		// Assert
-		if err != nil {
-			assert.Equal(t, expected, err)
+		assert.Equal(t, expected, err)
+	})
+}
+
+func TestGetExpenseList(t *testing.T) {
+	db, mock := newSqlMock(t)
+	defer db.Close()
+	repo := InitRepository(db)
+
+	statement := "SELECT (.+) FROM expenses"
+
+	t.Run("Success - TestGetExpenseList", func(t *testing.T) {
+		// Arrange
+		expected := []entities.Expenses{
+			{
+				Id:     1,
+				Title:  "Isakaya Bangna",
+				Amount: 899,
+				Note:   "central bangna",
+				Tags:   []string{"food", "beverage"},
+			},
+			{
+				Id:     2,
+				Title:  "apple smoothie",
+				Amount: 89,
+				Note:   "no discount",
+				Tags:   []string{"beverage"},
+			},
 		}
+
+		expectedRow := sqlmock.NewRows([]string{"id", "title", "amount", "note", "tags"}).
+			AddRow(expected[0].Id, expected[0].Title, expected[0].Amount, expected[0].Note, pq.Array(expected[0].Tags)).
+			AddRow(expected[1].Id, expected[1].Title, expected[1].Amount, expected[1].Note, pq.Array(expected[1].Tags))
+		mock.ExpectPrepare(statement).ExpectQuery().WillReturnRows(expectedRow)
+
+		// Act
+		result, err := repo.GetExpenseList()
+
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("Fail - TestGetExpenseList prepare query failed", func(t *testing.T) {
+		// Arrange
+		mockErr := fmt.Errorf("something went wrong")
+		expected := fmt.Errorf("can't prepare statment : something went wrong")
+
+		mock.ExpectPrepare(statement).WillReturnError(mockErr)
+
+		// Act
+		_, err := repo.GetExpenseList()
+
+		// Assert
+		assert.Equal(t, expected, err)
+	})
+
+	t.Run("Fail - TestGetExpenseList query all failed", func(t *testing.T) {
+		// Arrange
+		mockErr := fmt.Errorf("something went wrong")
+		expected := fmt.Errorf("can't query all expense : something went wrong")
+
+		mock.ExpectPrepare(statement).ExpectQuery().WillReturnError(mockErr)
+
+		// Act
+		_, err := repo.GetExpenseList()
+
+		// Assert
+		assert.Equal(t, expected, err)
+	})
+
+	t.Run("Fail - TestGetExpenseList scan row into variable failed", func(t *testing.T) {
+		// Arrange
+		expected := fmt.Errorf("can't Scan row into variables : ")
+
+		expectedRow := sqlmock.NewRows([]string{"id", "title", "amount", "note", "tags"}).
+			AddRow(nil, nil, nil, nil, nil).
+			RowError(1, expected)
+		mock.ExpectPrepare(statement).ExpectQuery().WillReturnRows(expectedRow)
+
+		// Act
+		_, err := repo.GetExpenseList()
+
+		// Assert
+		assert.Error(t, err)
 	})
 }
 
